@@ -1,0 +1,22 @@
+Backend:
+
+used express and mongoose.
+totally only 4 routes
+
+2 for register and login for users
+2 for getting all the pins and creating a new pin oon the map.
+
+
+
+
+
+
+
+
+
+
+
+Frontend:
+
+Used poppins google font
+Used MapBox for generating the map. Paid debit card info for using its api. username - madhav011 pw - urusualpassword
