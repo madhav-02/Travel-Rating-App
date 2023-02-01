@@ -20,3 +20,5 @@ Frontend:
 
 Used poppins google font
 Used MapBox for generating the map. Paid debit card info for using its api. username - madhav011 pw - urusualpassword
+- while fetching the pins and displaying the pins on the map, the pins were visible. But on clciking the pins, the info abt 
+that place wasn't showing. Tried for one full day but stil struggled a lot. After reading the docs, came to a solution that worked.
