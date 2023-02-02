@@ -17,8 +17,8 @@ function App() {
     zoom: 14
   });
   const [pins, setPins] = useState([]);
-  
   const [currentPlaceId, setCurrentPlaceId] = useState("");  // currentPlaceId - is the _id of the pin that is currenly open.
+  const [newPlace,setNewPlace] = useState(null);
 
   useEffect(()=>{
     const getPins = async ()=>{
@@ -38,9 +38,19 @@ useEffect(()=>{
   console.log(currentPlaceId);
 },[currentPlaceId])
 
-  const handlePinOpen = (id)=>{
-    console.log(typeof id);
+  const handlePinOpen = (id,long,lat)=>{
+    // console.log(typeof id);
     setCurrentPlaceId(id);
+    setViewState({...viewState,latitude:lat,longitude:long})
+
+  }
+
+  const handleDoubleClick = (e)=>{
+    
+    console.log(e)
+    const long = e.lngLat.lng;
+    const lat = e.lngLat.lat;
+    setNewPlace({long,lat});
   }
   return (
     <div className="App">
@@ -50,15 +60,14 @@ useEffect(()=>{
         style={{width: "100vw", height: "100vh"}}
         mapStyle="mapbox://styles/mapbox/streets-v9"
         mapboxAccessToken={MAPBOX_TOKEN}
-        
+        onDblClick={handleDoubleClick}
+        duration="200"
+        fadeDuration={200}
         >
         {pins.map( (pin) =>(
   
           <>
-          
-          {console.log(`pin._id: ${pin._id}, currentPlaceId: ${currentPlaceId}`)}
-          {console.log(`Comparison result: ${pin._id === currentPlaceId}`)}
-            <Marker   longitude={pin.longitude} latitude={pin.latitude} color="red" onClick={()=>handlePinOpen(pin._id)}  />
+            <Marker   longitude={pin.longitude} latitude={pin.latitude} color="red" onClick={()=>handlePinOpen(pin._id,pin.longitude,pin.latitude)}  />
             { pin._id === currentPlaceId && 
                 <Popup  longitude={pin.longitude} latitude={pin.latitude} anchor="top" closeButton={true}  closeOnClick={false} onClose={()=>setCurrentPlaceId("")} >
                     <div className="card">
@@ -85,6 +94,12 @@ useEffect(()=>{
           </>
           ))
         }
+        
+         {newPlace && (
+            <Popup  longitude={newPlace.long} latitude={newPlace.lat} anchor="top" closeButton={true}  closeOnClick={false} onClose={()=>setNewPlace(null)} >
+              Hello
+            </Popup>
+         )} 
       </Map>
     </div>
   );
