@@ -30,3 +30,30 @@ label{
 .date{
     font-size: 15px;
 }
+
+form{
+    width: 230px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+}
+
+.button {
+    z-index: 2;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+}
+
+.logout{
+    background-color: tomato;
+}
+.login{
+    background-color: rgb(73, 92, 92);
+}
+.register{
+    background-color: blueviolet;
+}

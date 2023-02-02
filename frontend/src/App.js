@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEffect} from 'react';
-import Map, {Marker, Popup} from 'react-map-gl';
+import Map, {Marker, Popup,} from 'react-map-gl';
 import StarIcon from '@mui/icons-material/Star';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './App.css'
@@ -19,6 +19,9 @@ function App() {
   const [pins, setPins] = useState([]);
   const [currentPlaceId, setCurrentPlaceId] = useState("");  // currentPlaceId - is the _id of the pin that is currenly open.
   const [newPlace,setNewPlace] = useState(null);
+  const [newTitle,setNewTitle] = useState(null);
+  const [newRating,setNewRating] = useState(0);
+  const [newDesc,setNewDesc] = useState(null);
 
   useEffect(()=>{
     const getPins = async ()=>{
@@ -44,7 +47,28 @@ useEffect(()=>{
     setViewState({...viewState,latitude:lat,longitude:long})
 
   }
+  const handleSubmitPin = async (e) => {
+    e.preventDefault();  // By giving this, upon submitting the pin, the page will NOT refresh. Else it will
+    console.log("cam ehere");
+    const newPin = {
+      username:"John",
+      title:newTitle,
+      desc:newDesc,
+      rating:newRating,
+      latitude:newPlace.lat,
+      longitude:newPlace.long
+    }
+    console.log("New pin is: ",newPin);
 
+    try{
+        const response = await axios.post("/pins",newPin);
+        console.log("Response us: ",response);
+        setPins([...pins,response.data]);
+        setNewPlace(null);
+    }catch(err){
+      console.log(err);
+    }
+  }
   const handleDoubleClick = (e)=>{
     
     console.log(e)
@@ -54,34 +78,32 @@ useEffect(()=>{
   }
   return (
     <div className="App">
-      <Map
+      
+       <Map
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
         style={{width: "100vw", height: "100vh"}}
         mapStyle="mapbox://styles/mapbox/streets-v9"
         mapboxAccessToken={MAPBOX_TOKEN}
         onDblClick={handleDoubleClick}
-        duration="200"
-        fadeDuration={200}
         >
+          <button className='button logout'>Logout</button>
+         <button className='button login'>Login</button>
+         <button className='button register'>Register</button> 
         {pins.map( (pin) =>(
   
           <>
             <Marker   longitude={pin.longitude} latitude={pin.latitude} color="red" onClick={()=>handlePinOpen(pin._id,pin.longitude,pin.latitude)}  />
             { pin._id === currentPlaceId && 
                 <Popup  longitude={pin.longitude} latitude={pin.latitude} anchor="top" closeButton={true}  closeOnClick={false} onClose={()=>setCurrentPlaceId("")} >
-                    <div className="card">
+                    <div className='card'>
                       <label >Place</label>
                       <h4>Effiel TOwer</h4>
                       <label >Review</label>
                       <p className="desc">{pin.desc}</p>
                       <label >Rating</label>
                       <div className="stars">
-                        <StarIcon className='star'></StarIcon>
-                        <StarIcon className='star'></StarIcon>
-                        <StarIcon className='star'></StarIcon>
-                        <StarIcon className='star'></StarIcon>
-                        <StarIcon className='star'></StarIcon>
+                        {Array(pin.rating).fill(<StarIcon className='star'></StarIcon>)}
                       </div>
                       
                       <label >Information</label>
@@ -94,13 +116,34 @@ useEffect(()=>{
           </>
           ))
         }
-        
+
          {newPlace && (
             <Popup  longitude={newPlace.long} latitude={newPlace.lat} anchor="top" closeButton={true}  closeOnClick={false} onClose={()=>setNewPlace(null)} >
-              Hello
+              <div>
+                <form onSubmit={handleSubmitPin} >
+                  <label>Title</label>
+                  <input type="text" placeholder='Enter Title' onChange={(e)=>(setNewTitle(e.target.value))}/>
+                  <label>Review</label>
+                  <textarea cols="30" rows="10" placeholder='Tell us about this place' onChange={(e)=>(setNewDesc(e.target.value))}></textarea>
+                  <label>Rating</label>
+                  <select  onChange={(e)=>(setNewRating(e.target.value))}>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    
+                  </select>
+                  <button className='addpinbtn' type="submit">Add Pin</button>
+                </form>
+              </div>
             </Popup>
          )} 
+        <button className='button logout'>Logout</button>
+         <button className='button login'>Login</button>
+         <button className='button register'>Register</button> 
       </Map>
+         
     </div>
   );
 }

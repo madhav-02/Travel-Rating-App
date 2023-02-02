@@ -8,12 +8,12 @@ const PinSchema = new mongoose.Schema({
     title : {
         type: String,
         required: true,
-        minLength : 5
+
     },
     desc : {
         type: String,
         required: true,
-        minLength : 5
+        
     },
     rating : {
         type : Number,
