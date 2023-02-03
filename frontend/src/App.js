@@ -22,7 +22,7 @@ function App() {
   const [newTitle,setNewTitle] = useState(null);
   const [newRating,setNewRating] = useState(0);
   const [newDesc,setNewDesc] = useState(null);
-
+  const [currentUser,setCurrentUser] = useState(null);
   useEffect(()=>{
     const getPins = async ()=>{
       try{  
@@ -51,7 +51,7 @@ useEffect(()=>{
     e.preventDefault();  // By giving this, upon submitting the pin, the page will NOT refresh. Else it will
     console.log("cam ehere");
     const newPin = {
-      username:"John",
+      username:currentUser,
       title:newTitle,
       desc:newDesc,
       rating:newRating,
@@ -87,9 +87,7 @@ useEffect(()=>{
         mapboxAccessToken={MAPBOX_TOKEN}
         onDblClick={handleDoubleClick}
         >
-          <button className='button logout'>Logout</button>
-         <button className='button login'>Login</button>
-         <button className='button register'>Register</button> 
+
         {pins.map( (pin) =>(
   
           <>
@@ -119,7 +117,7 @@ useEffect(()=>{
 
          {newPlace && (
             <Popup  longitude={newPlace.long} latitude={newPlace.lat} anchor="top" closeButton={true}  closeOnClick={false} onClose={()=>setNewPlace(null)} >
-              <div>
+              <div style={{width: "250px", height:"250px", display:"flex", flexDirection: "column" ,justifyContent: "space-around"}}>
                 <form onSubmit={handleSubmitPin} >
                   <label>Title</label>
                   <input type="text" placeholder='Enter Title' onChange={(e)=>(setNewTitle(e.target.value))}/>
@@ -134,16 +132,24 @@ useEffect(()=>{
                     <option value="5">5</option>
                     
                   </select>
-                  <button className='addpinbtn' type="submit">Add Pin</button>
+                  <button  type="submit">Add Pin</button>
                 </form>
               </div>
             </Popup>
-         )} 
-        <button className='button logout'>Logout</button>
-         <button className='button login'>Login</button>
-         <button className='button register'>Register</button> 
+         )}
+         {currentUser ? (
+          
+          <div style={{ position: "absolute", right: 10, top: 10 }}>
+            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px"}}>Logout</button>
+          </div>
+         ) : (
+          <div style={{ position: "absolute", right: 10, top: 10 }}>
+            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px"}}>Login</button>
+            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px"}}>Register</button>
+          </div>
+         )}
       </Map>
-         
+          
     </div>
   );
 }
