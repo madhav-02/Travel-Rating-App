@@ -6,6 +6,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './App.css'
 import axios from "axios"
 import {format} from "timeago.js"
+import Register from './components/Register';
+import Login from './components/Login';
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_API; // Set your mapbox token here
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
   const [newRating,setNewRating] = useState(0);
   const [newDesc,setNewDesc] = useState(null);
   const [currentUser,setCurrentUser] = useState(null);
+  const [showRegister,setShowRegister] = useState(false);
+  const [showLogin,setShowLogin] = useState(false);
   useEffect(()=>{
     const getPins = async ()=>{
       try{  
@@ -49,7 +53,6 @@ useEffect(()=>{
   }
   const handleSubmitPin = async (e) => {
     e.preventDefault();  // By giving this, upon submitting the pin, the page will NOT refresh. Else it will
-    console.log("cam ehere");
     const newPin = {
       username:currentUser,
       title:newTitle,
@@ -79,7 +82,7 @@ useEffect(()=>{
   return (
     <div className="App">
       
-       <Map
+       { <Map
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
         style={{width: "100vw", height: "100vh"}}
@@ -140,16 +143,20 @@ useEffect(()=>{
          {currentUser ? (
           
           <div style={{ position: "absolute", right: 10, top: 10 }}>
-            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px"}}>Logout</button>
+            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px", cursor:"pointer"}}>Logout</button>
           </div>
          ) : (
           <div style={{ position: "absolute", right: 10, top: 10 }}>
-            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px"}}>Login</button>
-            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px"}}>Register</button>
+            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px", cursor:"pointer"}} onClick={()=>setShowLogin(true)}>Login</button>
+            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px", cursor:"pointer"}} onClick={()=>setShowRegister(true)}>Register</button>
           </div>
          )}
-      </Map>
-          
+         <div  >
+          {showRegister && <Register setShowRegister={setShowRegister}/>}
+          {showLogin && <Login setShowLogin={setShowLogin} />}
+         </div>
+      </Map> 
+    } 
     </div>
   );
 }
