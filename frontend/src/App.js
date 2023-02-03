@@ -11,6 +11,7 @@ import Login from './components/Login';
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_API; // Set your mapbox token here
 
 function App() {
+  const myStorage = window.localStorage;
   const [viewState, setViewState] = useState({
     latitude: 48.8584,
     longitude: 2.2945,
@@ -24,7 +25,7 @@ function App() {
   const [newTitle,setNewTitle] = useState(null);
   const [newRating,setNewRating] = useState(0);
   const [newDesc,setNewDesc] = useState(null);
-  const [currentUser,setCurrentUser] = useState(null);
+  const [currentUser,setCurrentUser] = useState(myStorage.getItem("user"));
   const [showRegister,setShowRegister] = useState(false);
   const [showLogin,setShowLogin] = useState(false);
   useEffect(()=>{
@@ -45,8 +46,11 @@ useEffect(()=>{
   console.log(currentPlaceId);
 },[currentPlaceId])
 
+useEffect(()=>{
+  console.log(currentUser)
+},[currentUser])
   const handlePinOpen = (id,long,lat)=>{
-    // console.log(typeof id);
+    console.log(currentUser);
     setCurrentPlaceId(id);
     setViewState({...viewState,latitude:lat,longitude:long})
 
@@ -65,7 +69,6 @@ useEffect(()=>{
 
     try{
         const response = await axios.post("/pins",newPin);
-        console.log("Response us: ",response);
         setPins([...pins,response.data]);
         setNewPlace(null);
     }catch(err){
@@ -79,6 +82,11 @@ useEffect(()=>{
     const lat = e.lngLat.lat;
     setNewPlace({long,lat});
   }
+
+  const handleLogout = () => {
+    myStorage.removeItem("user");
+    setCurrentUser(null);
+  }
   return (
     <div className="App">
       
@@ -90,11 +98,11 @@ useEffect(()=>{
         mapboxAccessToken={MAPBOX_TOKEN}
         onDblClick={handleDoubleClick}
         >
-
+         
         {pins.map( (pin) =>(
   
           <>
-            <Marker   longitude={pin.longitude} latitude={pin.latitude} color="red" onClick={()=>handlePinOpen(pin._id,pin.longitude,pin.latitude)}  />
+            <Marker   longitude={pin.longitude} latitude={pin.latitude} color={pin.username===currentUser ? "red" : "blue"} onClick={()=>handlePinOpen(pin._id,pin.longitude,pin.latitude)}  />
             { pin._id === currentPlaceId && 
                 <Popup  longitude={pin.longitude} latitude={pin.latitude} anchor="top" closeButton={true}  closeOnClick={false} onClose={()=>setCurrentPlaceId("")} >
                     <div className='card'>
@@ -143,7 +151,7 @@ useEffect(()=>{
          {currentUser ? (
           
           <div style={{ position: "absolute", right: 10, top: 10 }}>
-            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px", cursor:"pointer"}}>Logout</button>
+            <button style={{border:"none",padding:"5px",borderRadius:"5px",color:"white",backgroundColor:"tomato",marginLeft:"2px", cursor:"pointer"}} onClick={handleLogout}>Logout</button>
           </div>
          ) : (
           <div style={{ position: "absolute", right: 10, top: 10 }}>
@@ -153,7 +161,7 @@ useEffect(()=>{
          )}
          <div  >
           {showRegister && <Register setShowRegister={setShowRegister}/>}
-          {showLogin && <Login setShowLogin={setShowLogin} />}
+          {showLogin && <Login setShowLogin={setShowLogin} myStorage={myStorage} setCurrentUser={setCurrentUser}/>}
          </div>
       </Map> 
     } 

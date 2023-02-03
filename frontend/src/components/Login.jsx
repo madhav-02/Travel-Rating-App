@@ -17,6 +17,9 @@ function Login(props) {
 
     try{
       const response = await axios.post("/users/login", user);
+      props.myStorage.setItem("user",response.data.username);
+      props.setCurrentUser(response.data.username);
+      props.setShowLogin(false);
       setFailure(false);
     }catch(err){
         setFailure(true);
